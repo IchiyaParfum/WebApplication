@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<link rel="stylesheet" type="text/css" href="leaflet/leaflet.css" />
+<script type="text/javascript" src="leaflet/leaflet.js"></script>
+<script type="text/javascript" src="leaflet/leafletembed.js"></script>
+  <title>OpenLayers example</title>
+    <style>
+    #mapid{ width: 900px; height: 500px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="titlebar">
+      <div class="title">Heatmap</div>
+      <div class="buttons">
+        <button onclick="window.location.href='https://heatmap-219120.appspot.com/api/sensors.csv'">CSV export</button>
+        <button onclick="window.location.href='https://heatmap-219120.appspot.com/api/sensors.json'">JSON export</button>
+      </div>
+    </div>
+    <div class="map" id="mapid"></div>
+  </div>
+   <script src="./leaflet/leafletembed.js"></script>
+</body>
+
+</html>
