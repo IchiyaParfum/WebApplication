@@ -15,7 +15,7 @@ import com.google.gson.JsonArray;
 
 @WebServlet(
     name = "DatastoreServlet",
-    urlPatterns = {"/Datastore/*"}
+    urlPatterns = {"/Datastore"}
 )
 public class DatastoreServlet extends HttpServlet {
 	private DatastoreManager ds;
@@ -26,27 +26,33 @@ public class DatastoreServlet extends HttpServlet {
 	
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	 //setAccessControlHeaders(response);
 	String responseString = getResponseContent(request, response);
 	setResponseContent(response, responseString, HttpServletResponse.SC_OK);
   }
   
   private String getResponseContent(HttpServletRequest request, HttpServletResponse response){
-	  	String requestedRes = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
-		response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-		
+	  	String requestedId = request.getParameter("id");
+	  	String requestedRes = request.getParameter("res");
+	  		
 		if(requestedRes.endsWith(".csv")) {
+			response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
 			return new String();
 		}else if(requestedRes.endsWith(".json")){
-			return doGetAsJson(request, response);
+			response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
+			return doGetAsJson(request, response, requestedId);
 		}
 		return new String();
 	}
   
-  	private String doGetAsJson(HttpServletRequest request, HttpServletResponse response){
+  	private String doGetAsJson(HttpServletRequest request, HttpServletResponse response, String id){
 		response.setContentType ("application/json");
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		return gson.toJson(ds.queryGSon("myFirstSensor"));
+		if(id == null) {
+			//Return sensors
+			return gson.toJson(ds.queryGSon());
+		}
+		//Return sensor data
+		return gson.toJson(ds.queryGSon(id));
   	}
 	
 	private void setResponseContent(HttpServletResponse response, String content, int status) throws IOException {
