@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import client.net.HttpClient;
+import client.net.HttpsClient;
 
 public abstract class Device implements Runnable{
 
