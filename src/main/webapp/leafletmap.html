@@ -21,14 +21,14 @@
     <div class="titlebar">
       <div class="title">Heatmap</div>
       <div class="buttons">
-        <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore/sensors.csv'">CSV export</button>
-        <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore/sensors.json'">JSON export</button>
+        <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?res=sensors.csv'">CSV export</button>
+        <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?res=sensors.json'">JSON export</button>
       </div>
     </div>
     <div class="map" id="mapid"></div>
   </div>
-  	 <script type="text/javascript">initmap();</script>
   	 <div id="table">
+  	 <script src="./leaflet/leafletembed.js"></script>
   	 <script>
 	  	var data = [
 	  	  {
