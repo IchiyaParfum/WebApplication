@@ -26,7 +26,8 @@ public class DatastoreServlet extends HttpServlet {
 	
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	String responseString = getResponseContent(request, response);
+	  setAccessControlHeaders(response);
+	  String responseString = getResponseContent(request, response);
 	setResponseContent(response, responseString, HttpServletResponse.SC_OK);
   }
   
@@ -34,14 +35,16 @@ public class DatastoreServlet extends HttpServlet {
 	  	String requestedId = request.getParameter("id");
 	  	String requestedRes = request.getParameter("res");
 	  		
-		if(requestedRes.endsWith(".csv")) {
-			response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-			return new String();
-		}else if(requestedRes.endsWith(".json")){
-			response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-			return doGetAsJson(request, response, requestedId);
-		}
-		return new String();
+	  	if(requestedRes != null) {
+	  		if(requestedRes.endsWith(".csv")) {
+				response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
+				return new String();
+			}else if(requestedRes.endsWith(".json")){
+				response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
+				return doGetAsJson(request, response, requestedId);
+			}
+	  	}		
+		return doGetAsJson(request, response, null);
 	}
   
   	private String doGetAsJson(HttpServletRequest request, HttpServletResponse response, String id){
@@ -75,4 +78,11 @@ public class DatastoreServlet extends HttpServlet {
 	  JsonArray ja = ds.queryGSon("myFirstSensor");
 	  resp.getWriter().print(ja);	//Send back to client
 	}
+  
+  private void setAccessControlHeaders(HttpServletResponse resp) {
+		resp.setHeader("Access-Control-Allow-Origin", "*");
+		resp.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD");
+		resp.setHeader("Access-Control-Allow-Credentials", "true");
+		resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+}
 }
