@@ -1,24 +1,19 @@
 package client.net;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
-
-public class HttpsClient {
+public class HttpClient {
 
 	private boolean connected = false;
-	private URL httpsURL;
-	private HttpsURLConnection con;
+	private URL httpURL;
+	private HttpURLConnection con;
 	
-	public HttpsClient(String destURL) throws MalformedURLException {
-		httpsURL = new URL(destURL);
+	public HttpClient(String destURL) throws MalformedURLException {
+		httpURL = new URL(destURL);
 	}
 	
 	public boolean post(String data) throws IOException {
@@ -34,6 +29,9 @@ public class HttpsClient {
 			// For POST only - END
 
 			int responseCode = con.getResponseCode();
+			
+			disconnect();
+			connect();
 			return (responseCode == HttpURLConnection.HTTP_OK) ;
 		}
 		return false;
@@ -41,7 +39,7 @@ public class HttpsClient {
 	
 	public void connect() throws IOException {
 		if(!connected) {
-			con = (HttpsURLConnection)httpsURL.openConnection();	
+			con = (HttpURLConnection)httpURL.openConnection();	
 			connected = true;
 		}
 			
