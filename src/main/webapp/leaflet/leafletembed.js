@@ -1,59 +1,37 @@
-var map;
-var ajaxRequest;
-var plotlist;
-var plotlayers=[];
+var mymap;
+var sensorURL = "http://webapplication-226612.appspot.com/Datastore";
+var charts = [];
+var rawMeasurements = [];
+var measurements = [];
 
-function initmap(){
-	//set up the map
-	map = new L.Map('mapid').setView([42.35, -71.08], 1);;
+window.onload = addMarkersToMap();
 
-	// create the tile layer with correct attribution
-	var osmUrl='https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png';
-	var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-	var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12, attribution: osmAttrib});		
+//Create and link map to div
+mymap = L.map('mapid');
 
-	// start the map in South-East England
-	map.setView(new L.LatLng(51.3, 0.7),1);
-	map.addLayer(osm);
-	addGeoJson();
-}
+// create the tile layer with correct attribution
+var osmUrl='https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png';
+var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12, attribution: osmAttrib});		
 
-function addGeoJson(){
-	var geojsonMarkerOptions = {
-		    radius: 8,
-		    fillColor: "#ff7800",
-		    color: "#000",
-		    weight: 1,
-		    opacity: 1,
-		    fillOpacity: 0.8
-		};
-	
-	var geojsonFeature = {
-		    "type": "Feature",
-		    "properties": {
-		        "name": "Coors Field",
-		        "amenity": "Baseball Stadium",
-		        "popupContent": "This is where the Rockies play!"
-		    },
-		    "geometry": {
-		        "type": "Point",
-		        "coordinates": [8.227512, 46.818188]
-		    }
-		};
+// start the map in South-East England
+mymap.setView(new L.LatLng(51.3, 0.7),1);
+mymap.addLayer(osm);
 
-	L.geoJSON(geojsonFeature, {
-	    onEachFeature: onEachFeature,
-	    pointToLayer: function (feature, latlng) {
-	        return L.circleMarker(latlng, geojsonMarkerOptions);
-	    }
-	    
-	}).addTo(map);
-	
-}
+var markerOptions = {
+	    radius: 8,
+	    fillColor: "#ff7800",
+	    color: "#000",
+	    weight: 1,
+	    opacity: 1,
+	    fillOpacity: 0.8
+	};
 
-function onEachFeature(feature, layer) {
-    // does this feature have a property named popupContent?
-    if (feature.properties && feature.properties.popupContent) {
-        layer.bindPopup(feature.properties.popupContent);
-    }
+function addMarkersToMap() {
+	$.getJSON(sensorURL , function (data) {
+        for (var i = 0; i < data.length; i++) {
+            var marker = L.circleMarker([data[i].locLat, data[i].locLong], markerOptions).addTo(mymap);
+            marker.id = data[i].id;
+        }
+    });
 }
