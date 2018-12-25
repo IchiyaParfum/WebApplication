@@ -63,8 +63,9 @@ public class DatastoreManager {
 		Query<Entity> query = Query.newEntityQueryBuilder()
 			    .setKind("sensor")
 			    .setFilter(CompositeFilter.and(PropertyFilter.eq("id", id)))
-			    .build();
-		
+			    .setOrderBy(OrderBy.asc("timestamp"))
+			    .build();	    
+			   
 		QueryResults<Entity> tasks = ds.run(query);
 		
 		return queryResultToJson(tasks);

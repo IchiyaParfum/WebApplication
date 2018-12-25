@@ -1,0 +1,7 @@
+indexes:
+
+- kind: sensor 
+  properties: 
+    - name: id 
+    - name: timestamp
+      direction: asc
