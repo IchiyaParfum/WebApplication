@@ -1,6 +1,8 @@
 package client.net;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -29,12 +31,26 @@ public class HttpClient {
 			// For POST only - END
 
 			int responseCode = con.getResponseCode();
-			
+			printResponse();
 			disconnect();
 			connect();
 			return (responseCode == HttpURLConnection.HTTP_OK) ;
 		}
 		return false;
+	}
+	
+	public void printResponse() {
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String line = new String();
+			while((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+			con.getInputStream().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void connect() throws IOException {

@@ -34,11 +34,24 @@ public class HttpsClient {
 			// For POST only - END
 
 			int responseCode = con.getResponseCode();
-			return (responseCode == HttpURLConnection.HTTP_OK) ;
+			printResponse();
+			return (responseCode == HttpURLConnection.HTTP_OK);
 		}
 		return false;
 	}
-	
+	public void printResponse() {
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String line = new String();
+			while((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+			con.getInputStream().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void connect() throws IOException {
 		if(!connected) {
 			con = (HttpsURLConnection)httpsURL.openConnection();	
