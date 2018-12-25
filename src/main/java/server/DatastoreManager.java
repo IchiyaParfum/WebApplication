@@ -35,33 +35,23 @@ public class DatastoreManager {
 	}
 	private boolean first = false;
 	public void storeGSon(String jsonString) {
-		//Build gson
+		//Build Json from received data
 		JsonParser jsonParser = new JsonParser();
 		JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
 		
-		if(first == false) {
-			createSensorEntity(json);
-			first = true;
-		}
-		
-		
+		//Create entities in datastore
+		createSensorEntity(json);	//If entity does already exist nothing happens				
 		addDataChild(json);
 	    
 	}
 	
-	private void createSensorEntity(JsonObject json) {
-		// The kind for the new entity
-	    String kind = "sensor";
-	    // The name/ID for the new entity
-	    String name = json.get("id").getAsString();
-	    // The Cloud Datastore key for the new entity
-	    Key taskKey = ds.newKeyFactory().setKind(kind).newKey(name);
-	    
-	    
+	private void createSensorEntity(JsonObject json) {		
+	    String kind = "sensor";	// The kind for the new entit    
+	    String name = json.get("id").getAsString();// The name/ID for the new entity	    
+	    Key taskKey = ds.newKeyFactory().setKind(kind).newKey(name);// The Cloud Datastore key for the new entity
+	    	    
 	    Entity entity = Entity.newBuilder(taskKey)
 		        .set("id", json.get("id").getAsString())
-		        //.set("temperature", json.get("temperature").getAsDouble())
-		        //.set("timestamp", json.get("timestamp").getAsDouble())
 		        .set("locLat", json.get("location").getAsJsonObject().get("latitude").getAsDouble())
 		        .set("locLong", json.get("location").getAsJsonObject().get("longitude").getAsDouble())
 		        .build();
@@ -70,24 +60,21 @@ public class DatastoreManager {
 	    ds.put(entity);
 	}
 	
-	private void addDataChild(JsonObject json) {
-		// The kind for the new entity
-	    String kind = "data";
-	    // The name/ID for the new entity
-	    String name = json.get("id").getAsString();
-	    String id = "" + json.get("timestamp").getAsDouble();
+	private void addDataChild(JsonObject json) {		
+	    String kind = "data";// The kind for the new entity    
+	    String name = json.get("id").getAsString();	//Ancestor name
+	    String dataId = "" + json.get("timestamp").getAsDouble();
 	    
+	    //Create key for child using sensor as ancestor
 	    KeyFactory keyFactory = ds.newKeyFactory()
 	    	    .addAncestors(PathElement.of("sensor", name))
 	    	    .setKind(kind);
-	    	Key taskKey = keyFactory.newKey(id);
+	    	Key taskKey = keyFactory.newKey(dataId);
 	    
+	    //Create child entity
 	    Entity entity = Entity.newBuilder(taskKey)
-		        //.set("id", json.get("id").getAsString())
 		        .set("temperature", json.get("temperature").getAsDouble())
 		        .set("timestamp", json.get("timestamp").getAsDouble())
-		        //.set("locLat", json.get("location").getAsJsonObject().get("latitude").getAsDouble())
-		        //.set("locLong", json.get("location").getAsJsonObject().get("longitude").getAsDouble())
 		        .build();
 	    
 	 // Saves the entity
@@ -95,13 +82,12 @@ public class DatastoreManager {
 	}
 	
 	public JsonArray queryGSon(String id) {
+		//Queries for data of sensor with given id
 		Query<Entity> query = Query.newEntityQueryBuilder()
 			    .setKind("data")
-			    //.setFilter(CompositeFilter.and(PropertyFilter.eq("id", id)))
 			    .setFilter(PropertyFilter.hasAncestor(
-			            ds.newKeyFactory().setKind("sensor").newKey("myFirstSensor")))
+			            ds.newKeyFactory().setKind("sensor").newKey(id)))
 			    .setOrderBy(OrderBy.asc("timestamp"))
-
 			    .build();	    
 			   
 		QueryResults<Entity> tasks = ds.run(query);
@@ -110,6 +96,7 @@ public class DatastoreManager {
 	}
 	
 	public JsonArray queryGSon() {
+		//Queries for all sensor entities
 		Query<Entity> query = Query.newEntityQueryBuilder()
 			    .setKind("sensor")
 			    .build();	    
