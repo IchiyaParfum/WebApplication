@@ -5,6 +5,7 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyFactory;
+import com.google.cloud.datastore.PathElement;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery.CompositeFilter;
@@ -32,38 +33,85 @@ public class DatastoreManager {
 		}
 		return datastoreManager;
 	}
-	
+	private boolean first = false;
 	public void storeGSon(String jsonString) {
 		//Build gson
 		JsonParser jsonParser = new JsonParser();
 		JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
 		
-	    // The kind for the new entity
+		if(first == false) {
+			createSensorEntity(json);
+			first = true;
+		}
+		
+		
+		addDataChild(json);
+	    
+	}
+	
+	private void createSensorEntity(JsonObject json) {
+		// The kind for the new entity
 	    String kind = "sensor";
 	    // The name/ID for the new entity
-	    String name = json.get("id").getAsString() + json.get("timestamp").getAsDouble();
+	    String name = json.get("id").getAsString();
 	    // The Cloud Datastore key for the new entity
 	    Key taskKey = ds.newKeyFactory().setKind(kind).newKey(name);
 	    
-	    // Prepares the new entity
-	    Entity entity = Entity.newBuilder(taskKey)
-	        .set("id", json.get("id").getAsString())
-	        .set("temperature", json.get("temperature").getAsDouble())
-	        .set("timestamp", json.get("timestamp").getAsDouble())
-	        .set("locLat", json.get("location").getAsJsonObject().get("latitude").getAsDouble())
-	        .set("locLong", json.get("location").getAsJsonObject().get("longitude").getAsDouble())
-	        .build();
 	    
-	    // Saves the entity
+	    Entity entity = Entity.newBuilder(taskKey)
+		        .set("id", json.get("id").getAsString())
+		        //.set("temperature", json.get("temperature").getAsDouble())
+		        //.set("timestamp", json.get("timestamp").getAsDouble())
+		        .set("locLat", json.get("location").getAsJsonObject().get("latitude").getAsDouble())
+		        .set("locLong", json.get("location").getAsJsonObject().get("longitude").getAsDouble())
+		        .build();
+	    
+	 // Saves the entity
 	    ds.put(entity);
-
+	}
+	
+	private void addDataChild(JsonObject json) {
+		// The kind for the new entity
+	    String kind = "data";
+	    // The name/ID for the new entity
+	    String name = json.get("id").getAsString();
+	    String id = "" + json.get("timestamp").getAsDouble();
+	    
+	    KeyFactory keyFactory = ds.newKeyFactory()
+	    	    .addAncestors(PathElement.of("sensor", name))
+	    	    .setKind(kind);
+	    	Key taskKey = keyFactory.newKey(id);
+	    
+	    Entity entity = Entity.newBuilder(taskKey)
+		        //.set("id", json.get("id").getAsString())
+		        .set("temperature", json.get("temperature").getAsDouble())
+		        .set("timestamp", json.get("timestamp").getAsDouble())
+		        //.set("locLat", json.get("location").getAsJsonObject().get("latitude").getAsDouble())
+		        //.set("locLong", json.get("location").getAsJsonObject().get("longitude").getAsDouble())
+		        .build();
+	    
+	 // Saves the entity
+	    ds.put(entity);
 	}
 	
 	public JsonArray queryGSon(String id) {
 		Query<Entity> query = Query.newEntityQueryBuilder()
-			    .setKind("sensor")
-			    .setFilter(CompositeFilter.and(PropertyFilter.eq("id", id)))
+			    .setKind("data")
+			    //.setFilter(CompositeFilter.and(PropertyFilter.eq("id", id)))
+			    .setFilter(PropertyFilter.hasAncestor(
+			            ds.newKeyFactory().setKind("sensor").newKey("myFirstSensor")))
 			    .setOrderBy(OrderBy.asc("timestamp"))
+
+			    .build();	    
+			   
+		QueryResults<Entity> tasks = ds.run(query);
+		
+		return queryResultToJson(tasks);
+	}
+	
+	public JsonArray queryGSon() {
+		Query<Entity> query = Query.newEntityQueryBuilder()
+			    .setKind("sensor")
 			    .build();	    
 			   
 		QueryResults<Entity> tasks = ds.run(query);
