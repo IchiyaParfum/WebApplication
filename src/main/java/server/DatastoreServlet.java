@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonArray;
+
 @WebServlet(
     name = "DatastoreServlet",
     urlPatterns = {"/Datastore"}
@@ -37,6 +39,7 @@ public class DatastoreServlet extends HttpServlet {
 		  msg = msg + line;
 	  }
 	  ds.storeGSon(msg);
-	  resp.getWriter().print(msg);	//Send back to client
+	  JsonArray ja = ds.queryGSon("myFirstSensor");
+	  resp.getWriter().print(ja);	//Send back to client
 	}
 }
