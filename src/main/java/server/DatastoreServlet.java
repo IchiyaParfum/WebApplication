@@ -14,7 +14,12 @@ import javax.servlet.http.HttpServletResponse;
     urlPatterns = {"/Datastore"}
 )
 public class DatastoreServlet extends HttpServlet {
-
+	private DatastoreManager ds;
+	
+	public DatastoreServlet() {
+		ds = DatastoreManager.getInstance();
+	}
+	
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) 
       throws IOException {
@@ -31,9 +36,7 @@ public class DatastoreServlet extends HttpServlet {
 	  while((line = br.readLine()) != null) {
 		  msg = msg + line;
 	  }
-	  
+	  ds.storeGSon(msg);
 	  resp.getWriter().print(msg);	//Send back to client
-	  System.out.println("Hello");
-	  System.out.println(msg);
 	}
 }
