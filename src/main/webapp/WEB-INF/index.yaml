@@ -1,7 +1,12 @@
 indexes:
 
-- kind: sensor 
-  properties: 
-    - name: id 
-    - name: timestamp
-      direction: asc
+- kind: sensor
+  ancestor: no
+  properties:
+  - name: id
+
+- kind: data
+  ancestor: yes
+  properties:
+  - name: timestamp
+    direction: asc
