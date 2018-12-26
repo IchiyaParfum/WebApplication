@@ -3,39 +3,45 @@ body {
     padding: 0;
     margin: 0;
 }
-html, body{
+html, body, .map{
     height: 100%;
     width: 100%; 
 }
 
 .titlebar {
   background-color: lightblue;
-  height: 100%;
-  width: 100%;
 }
 
 .title {	
 	font-style: bold;
 	font-size: 3em;
 }
-
-button{
+.buttons {
 	float: right;
+	padding: 12px 30px;
+	margin: 1px 1px;
+	font-size: 20px;
+}
+
+.export {
+	padding: 5px 5px;
+	margin: 1px 1px;
+	font-size: 1em;
+}
+
+.buttons, .export{	
 	  background-color: DodgerBlue;
 	  border: none;
 	  color: white;
-	  padding: 12px 30px;
-	  margin: 1px 1px;
 	  cursor: pointer;
-	  font-size: 20px;
 }
 
 /* Darker background on mouse-over */
-button:hover{
+.buttons:hover, .export:hover{
   background-color: RoyalBlue;
 }
 
-.map{
-    flex-grow : 1;
-    height: 100vh; width: 100%;
+.center{
+	display: flex; 
+	justify-content: center; 
 }
