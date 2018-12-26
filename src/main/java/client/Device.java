@@ -9,11 +9,13 @@ import client.net.HttpsClient;
 public abstract class Device implements Runnable{
 
 	protected String id;
+	protected Location loc;
 	protected int sendingIntervall = 5000;
 	protected HttpClient con;
 	
-	public Device(String id, String destURL) throws MalformedURLException {
+	public Device(String id, Location loc, String destURL) throws MalformedURLException {
 		this.id = id;
+		this.loc = loc;
 		con = new HttpClient(destURL);
 	}
 	
