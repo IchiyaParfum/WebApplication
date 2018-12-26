@@ -8,6 +8,7 @@
     <include path="leaflet/leaflet.js"></include>
     <include path="leaflet/leaflet.css"></include>
     <include path="leaflet/leafletembed.js"></include>
+    <include path="leafletmap.css"></include>
     
     <include path="leafletmapjs.html"></include>
     <include path="leaflet.js"></include>

@@ -7,23 +7,18 @@
 <script type="text/javascript" src="leaflet/leafletembed.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
+<link rel="stylesheet" href="leafletmap.css">
   <title>OpenLayers example</title>
-    <style>
-    #mapid{ width: 900px; height: 500px; }
-  </style>
-  <style>
-    #table{ width: 900px; height: 500px; }
-  </style>
 </head>
 
 <body>
-  <div class="container">
+  <div>
     <div class="titlebar">
-      <div class="title">Heatmap</div>
-      <div class="buttons">
+      <a class="title">Heatmap</a>
+      <a>
         <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?option=download&res=sensors.csv'">CSV export</button>
         <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?option=download&res=sensors.json'">JSON export</button>
-      </div>
+      </a>
     </div>
     <div class="map" id="mapid"></div>
     <div id="table"></div>
