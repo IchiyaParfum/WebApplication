@@ -12,18 +12,15 @@
 </head>
 
 <body>
-  <div>
-    <div class="titlebar">
+    <div class="titlebar" id="title">
       <a class="title">Heatmap</a>
       <a>
-        <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?option=download&res=sensors.csv'">CSV export</button>
-        <button onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?option=download&res=sensors.json'">JSON export</button>
+        <button class="buttons" onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?option=sensors&res=sensors.csv'">CSV export</button>
+        <button class="buttons" onclick="window.location.href='http://webapplication-226612.appspot.com/Datastore?option=sensors&res=sensors.json'">JSON export</button>
       </a>
     </div>
     <div class="map" id="mapid"></div>
-    <div id="table"></div>
-    <script src="./leaflet/leafletembed.js"></script>
-  </div> 	 
+	    <script>initMap()</script> 	 
 </body>
 
 </html>
