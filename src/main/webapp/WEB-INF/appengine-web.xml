@@ -5,15 +5,11 @@
   <static-files>
     <include path="index.html"></include>
     <include path="leafletmap.html"></include>
+    <include path="leafletmap.css"></include>
     <include path="leaflet/leaflet.js"></include>
     <include path="leaflet/leaflet.css"></include>
     <include path="leaflet/leafletembed.js"></include>
-    <include path="leafletmap.css"></include>
-    
-    <include path="leafletmapjs.html"></include>
-    <include path="leaflet.js"></include>
-    <include path="leaflet.css"></include>
-    <include path="datastoreConfiguration.json"></include>
+    <include path="/leaflet/images/marker-icon-2x.png"></include>
 
   </static-files>
   <sessions-enabled>false</sessions-enabled>
