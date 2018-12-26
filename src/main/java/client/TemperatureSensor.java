@@ -12,8 +12,10 @@ import com.google.gson.GsonBuilder;
 
 public class TemperatureSensor extends Device{
 	
-	public TemperatureSensor(String id, String destURL) throws MalformedURLException {
-		super(id, destURL);
+
+
+	public TemperatureSensor(String id, Location loc, String destURL) throws MalformedURLException {
+		super(id, loc, destURL);
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public class TemperatureSensor extends Device{
 	}
 	
 	private TemperatureSensorData getTemperatureSensorData() {
-		return new TemperatureSensorData(id, new Date(), new Location(47.0, 7.5), getTemperature());
+		return new TemperatureSensorData(id, new Date(), loc, getTemperature());
 	}
 
 }
