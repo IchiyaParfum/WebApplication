@@ -1,5 +1,5 @@
 var mymap;
-var sensorURL = "http://webapplication-226612.appspot.com/Datastore";
+var baseURL = "http://webapplication-226612.appspot.com/Datastore";
 var charts = [];
 var rawMeasurements = [];
 var measurements = [];
@@ -28,10 +28,45 @@ var markerOptions = {
 	};
 
 function addMarkersToMap() {
-	$.getJSON(sensorURL , function (data) {
+	$.getJSON(baseURL + "?option=sensors" , function (data) {
         for (var i = 0; i < data.length; i++) {
             var marker = L.circleMarker([data[i].locLat, data[i].locLong], markerOptions).addTo(mymap);
             marker.id = data[i].id;
+            marker.on = plotGraph(marker);
         }
+    });
+}
+
+function plotGraph(marker){
+	var xData = [];
+	var yData = [];
+	$.getJSON(baseURL + "?option=values&id=" + marker.id , function (data) {
+        for (var i = 0; i < data.length; i++) {
+            xData[i] = new Date(data[i].timestamp);
+            yData[i] = data[i].temperature;
+        }
+        
+        var dataSet = [
+  	  	  {
+  	  	    x: xData,
+  	  	    y: yData,
+  	  	    type: 'scatter'
+  	  	  }
+  	  	];
+  	
+        var layout = {
+  			  title: 'Temperature',
+  			  xaxis: {
+  			    title: 'Point of time',
+  			    showgrid: false,
+  			    zeroline: false
+  			  },
+  			  yaxis: {
+  			    title: 'Temperature in degrees',
+  			    showline: false
+  			  }
+  			};
+  	
+  	  	Plotly.newPlot('table', dataSet, layout);
     });
 }

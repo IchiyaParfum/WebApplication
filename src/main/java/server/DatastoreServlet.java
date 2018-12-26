@@ -32,19 +32,20 @@ public class DatastoreServlet extends HttpServlet {
   }
   
   private String getResponseContent(HttpServletRequest request, HttpServletResponse response){
+	  	String option = request.getParameter("option");
 	  	String requestedId = request.getParameter("id");
 	  	String requestedRes = request.getParameter("res");
 	  		
-	  	if(requestedRes != null) {
-	  		if(requestedRes.endsWith(".csv")) {
-				response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-				return new String();
-			}else if(requestedRes.endsWith(".json")){
-				response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-				return doGetAsJson(request, response, requestedId);
-			}
-	  	}		
-		return doGetAsJson(request, response, null);
+	  	switch(option) {
+	  	case "sensors":
+	  		return doGetAsJson(request, response, null);
+		case "values":
+	  		return doGetAsJson(request, response, requestedId);
+		case "download":
+	  		response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
+			return doGetAsJson(request, response, null);
+	  	}
+		return new String();		
 	}
   
   	private String doGetAsJson(HttpServletRequest request, HttpServletResponse response, String id){
