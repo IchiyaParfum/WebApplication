@@ -31,7 +31,7 @@ public class HttpClient {
 			// For POST only - END
 
 			int responseCode = con.getResponseCode();
-			printResponse();
+	
 			disconnect();
 			connect();
 			return (responseCode == HttpURLConnection.HTTP_OK) ;
