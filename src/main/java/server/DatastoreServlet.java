@@ -28,22 +28,22 @@ public class DatastoreServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	  setAccessControlHeaders(response);
 	  String responseString = getResponseContent(request, response);
-	setResponseContent(response, responseString, HttpServletResponse.SC_OK);
+	  setResponseContent(response, responseString, HttpServletResponse.SC_OK);
   }
   
   private String getResponseContent(HttpServletRequest request, HttpServletResponse response){
-	  	String option = request.getParameter("option");
+	  	String requestedOption = request.getParameter("option");
 	  	String requestedId = request.getParameter("id");
 	  	String requestedRes = request.getParameter("res");
-	  		
-	  	switch(option) {
-	  	case "sensors":
-	  		return doGetAsJson(request, response, null);
+	  	if(requestedRes != null) {
+	  		response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
+	  	}
+  		
+	  	switch(requestedOption) {
+	  	case "sensors":	  		
+	  		return doGetAsJson(request, response, requestedId);
 		case "values":
 	  		return doGetAsJson(request, response, requestedId);
-		case "download":
-	  		response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-			return doGetAsJson(request, response, null);
 	  	}
 		return new String();		
 	}
@@ -68,7 +68,7 @@ public class DatastoreServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	  InputStreamReader is = new InputStreamReader(req.getInputStream());
 	  BufferedReader br = new BufferedReader(is);
-	  
+
 	  String line = new String();
 	  String msg = new String();
 	  
@@ -76,8 +76,6 @@ public class DatastoreServlet extends HttpServlet {
 		  msg = msg + line;
 	  }
 	  ds.storeGSon(msg);
-	  JsonArray ja = ds.queryGSon("myFirstSensor");
-	  resp.getWriter().print(ja);	//Send back to client
 	}
   
   private void setAccessControlHeaders(HttpServletResponse resp) {
