@@ -1,46 +1,76 @@
 var mymap;
 var baseURL = "http://webapplication-226612.appspot.com/Datastore";
-var charts = [];
-var rawMeasurements = [];
-var measurements = [];
-
-window.onload = addMarkersToMap();
-
-//Create and link map to div
-mymap = L.map('mapid');
-
-// create the tile layer with correct attribution
-var osmUrl='https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png';
-var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12, attribution: osmAttrib});		
-
-// start the map in South-East England
-mymap.setView(new L.LatLng(51.3, 0.7),1);
-mymap.addLayer(osm);
-
-var markerOptions = {
-	    radius: 8,
-	    fillColor: "#ff7800",
-	    color: "#000",
-	    weight: 1,
-	    opacity: 1,
-	    fillOpacity: 0.8
+var popupOptions = {
+	    minWidth: 400	    
 	};
+
+window.onload = initMap();
+
+function initMap(){
+	//Create and link map to div
+	mymap = L.map('mapid');
+
+	// create the tile layer with correct attribution
+	var mbUrl='https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+	var mbAttrib='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+	'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+	'Imagery � <a href="https://www.mapbox.com/">Mapbox</a>';
+	var mbId = 'mapbox.streets';
+	var mb = new L.TileLayer(mbUrl, {minZoom: 1, maxZoom: 12, attribution: mbAttrib, id: mbId});		
+
+	// start the map in South-East England
+	setMapSize();
+	mymap.setView(new L.LatLng(51.3, 0.7),3);
+	mymap.addLayer(mb);	
+	addMarkersToMap();
+}
+
+function setMapSize(){
+	var element = document.getElementById('title').clientHeight;
+	document.getElementById("mapid").style.height = document.body.clientHeight - element + 'px';
+}
 
 function addMarkersToMap() {
 	$.getJSON(baseURL + "?option=sensors" , function (data) {
         for (var i = 0; i < data.length; i++) {
-            var marker = L.circleMarker([data[i].locLat, data[i].locLong], markerOptions).addTo(mymap);
-            marker.id = data[i].id;
-            marker.on('click', plotGraph);
+            var marker = L.marker([data[i].locLat, data[i].locLong]).addTo(mymap);
+            marker.id = data[i].id;	//Make marker id to sensor id
+            
+            //Popup
+            var popup = L.popup();
+            marker.bindPopup(popup, popupOptions);
+            marker.on('click', onMarkerClick);
+            
+            function onMarkerClick(e){
+            	var popup = e.target.getPopup();
+                popup.setContent(getPopupContent(e.target.id));
+                plotGraph(e.target.id);
+                //alert(popup.getContent())
+                popup.update();
+            }
+
         }
     });
 }
 
-function plotGraph(e){
+function getPopupContent(id){
+	var jsonExportUrl = baseURL + "?option=values&res=temperatures_'+id+'.json&id=" + id;
+    var csvExportUrl = baseURL + "?option=values&res=temperatures_'+id+'.csv&id=" + id;
+
+    var html = '<div id="table'+id+'"></div>' +
+    '<div>' +
+    '	<a class="center">' +   
+    '   	<button class="export" type="button" onclick="window.location.href=\'' + jsonExportUrl + '\'">JSON export</button>' +
+    '   	<button class="export" type="button" onclick="window.location.href=\'' + csvExportUrl + '\'">CSV export</button>' +
+    '	</a>' +
+    '</div>';
+    	return html;
+}
+
+function plotGraph(id){
 	var xData = [];
 	var yData = [];
-	$.getJSON(baseURL + "?option=values&id=" + e.target.id , function (data) {
+	$.getJSON(baseURL + "?option=values&id=" + id , function (data) {
         for (var i = 0; i < data.length; i++) {
             xData[i] = new Date(data[i].timestamp);
             yData[i] = data[i].temperature;
@@ -53,7 +83,7 @@ function plotGraph(e){
   	  	    type: 'scatter'
   	  	  }
   	  	];
-  	
+
         var layout = {
   			  title: 'Temperature',
   			  xaxis: {
@@ -67,6 +97,7 @@ function plotGraph(e){
   			  }
   			};
   	
-  	  	Plotly.newPlot('table', dataSet, layout);
+        var link = document.getElementById('table' + id);
+  	  	Plotly.newPlot(link, dataSet, layout);
     });
 }
