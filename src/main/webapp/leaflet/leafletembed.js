@@ -32,15 +32,15 @@ function addMarkersToMap() {
         for (var i = 0; i < data.length; i++) {
             var marker = L.circleMarker([data[i].locLat, data[i].locLong], markerOptions).addTo(mymap);
             marker.id = data[i].id;
-            marker.on = plotGraph(marker);
+            marker.on('click', plotGraph);
         }
     });
 }
 
-function plotGraph(marker){
+function plotGraph(e){
 	var xData = [];
 	var yData = [];
-	$.getJSON(baseURL + "?option=values&id=" + marker.id , function (data) {
+	$.getJSON(baseURL + "?option=values&id=" + e.target.id , function (data) {
         for (var i = 0; i < data.length; i++) {
             xData[i] = new Date(data[i].timestamp);
             yData[i] = data[i].temperature;
