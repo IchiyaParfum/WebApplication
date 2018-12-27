@@ -13,7 +13,7 @@ html, body, .map{
 }
 
 .title {	
-	font-style: bold;
+	font-weight: bold;
 	font-size: 3em;
 }
 .buttons {
@@ -44,4 +44,15 @@ html, body, .map{
 .center{
 	display: flex; 
 	justify-content: center; 
+}
+.aggregation {
+	width: 100%;
+    display: table;
+}
+.aggregation attribute {	
+	font-weight: bold;
+    float: left;
+}
+.aggregation value {
+    float: right;
 }
