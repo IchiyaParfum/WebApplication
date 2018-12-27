@@ -3,6 +3,7 @@
 
   <threadsafe>true</threadsafe>
   <static-files>
+     <include path="/favicon.ico"></include>
     <include path="index.html"></include>
     <include path="leafletmap.html"></include>
     <include path="leafletmap.css"></include>
@@ -10,7 +11,8 @@
     <include path="leaflet/leaflet.css"></include>
     <include path="leaflet/leafletembed.js"></include>
     <include path="/leaflet/images/marker-icon-2x.png"></include>
-
+ 	<include path="/leaflet/images/marker-icon.png"></include>
+  	<include path="/leaflet/images/marker-shadow.png"></include>
   </static-files>
   <sessions-enabled>false</sessions-enabled>
   <runtime>java8</runtime>
