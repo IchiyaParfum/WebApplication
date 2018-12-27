@@ -1,28 +1,28 @@
 package client;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class RandomTemperatureSensorSimulator {
-
+	final static int nOfSensors = 10;
+	final static String server = "http://webapplication-226612.appspot.com/Datastore";
+	
 	public static void main(String[] args) {
-		String server = "http://webapplication-226612.appspot.com/Datastore";
-				
+		
 		try {
-			TemperatureSensor[] sensors = {
-					new TemperatureSensor("myFirstSensor", new Location(-11.540312, -48.619735), server),
-					new TemperatureSensor("mySecondSensor", new Location(37.132292, -94.761191), server),
-					new TemperatureSensor("myThirdSensor", new Location(-31.683305, 21.905842), server),
-					new TemperatureSensor("myForthSensor", new Location(35.303021, 138.735593), server),
-					new TemperatureSensor("myFifthSensor", new Location(46.788024, 8.163880), server)				
-			};
-			
-			for(TemperatureSensor ts : sensors) {
+			for(int i = 0; i < nOfSensors; i++) {
+				TemperatureSensor ts = new TemperatureSensor("sensor_ID" + i, new Location(getRandomSymmetric(89), getRandomSymmetric(179)), server);
 				ts.connect();
 				new Thread(ts).start();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	public static double getRandomSymmetric(int i) {
+		Random rnd = new Random();
+		return rnd.nextInt(2*i) - i + rnd.nextDouble();
+	}
+
 }
