@@ -31,7 +31,7 @@ function setMapSize(){
 }
 
 function addMarkersToMap() {
-	$.getJSON(baseURL + "?option=sensors" , function (data) {
+	$.getJSON(baseURL , function (data) {
         for (var i = 0; i < data.length; i++) {
             var marker = L.marker([data[i].locLat, data[i].locLong]).addTo(mymap);
             marker.id = data[i].id;	//Make marker id to sensor id
@@ -54,8 +54,8 @@ function addMarkersToMap() {
 }
 
 function getPopupContent(id){
-	var jsonExportUrl = baseURL + "?option=values&res=temperatures_'+id+'.json&id=" + id;
-    var csvExportUrl = baseURL + "?option=values&res=temperatures_'+id+'.csv&id=" + id;
+	var jsonExportUrl = baseURL + "?res=temperatures_'+id+'.json&id=" + id;
+    var csvExportUrl = baseURL + "?res=temperatures_'+id+'.csv&id=" + id;
 
     var html = '<div id="table'+id+'"></div>' +
     '<div>' +
@@ -70,7 +70,7 @@ function getPopupContent(id){
 function plotGraph(id){
 	var xData = [];
 	var yData = [];
-	$.getJSON(baseURL + "?option=values&id=" + id , function (data) {
+	$.getJSON(baseURL + "?id=" + id , function (data) {
         for (var i = 0; i < data.length; i++) {
             xData[i] = new Date(data[i].timestamp);
             yData[i] = data[i].temperature;
