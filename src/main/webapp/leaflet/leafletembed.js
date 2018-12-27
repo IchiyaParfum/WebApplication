@@ -58,6 +58,20 @@ function getPopupContent(id){
     var csvExportUrl = baseURL + "?res=temperatures_'+id+'.csv&id=" + id;
 
     var html = '<div id="table'+id+'"></div>' +
+    '<div>'+
+    '	<section class="aggregation">'+
+    '		<attribute>'+
+    '			<p>Average week:</p>'+
+    '			<p>Average month:</p>'+
+    '			<p>Average year:</p>'+
+    '		</attribute>'+
+    '		<value>'+
+    '			<p id="avgWeek'+id+'">Not enough data</p>'+
+    '			<p id="avgMonth'+id+'">Not enough data</p>'+
+    '			<p id="avgYear'+id+'">Not enough data</p>'+
+    '		</value>'+
+    '	</section>'+
+    '</div>'+
     '<div>' +
     '	<a class="center">' +   
     '   	<button class="export" type="button" onclick="window.location.href=\'' + jsonExportUrl + '\'">JSON export</button>' +
@@ -70,12 +84,13 @@ function getPopupContent(id){
 function plotGraph(id){
 	var xData = [];
 	var yData = [];
+	//Get data of sensor from server
 	$.getJSON(baseURL + "?id=" + id , function (data) {
         for (var i = 0; i < data.length; i++) {
             xData[i] = new Date(data[i].timestamp);
             yData[i] = data[i].temperature;
         }
-        
+    //Create data set and plot   
         var dataSet = [
   	  	  {
   	  	    x: xData,
@@ -85,19 +100,120 @@ function plotGraph(id){
   	  	];
 
         var layout = {
-  			  title: 'Temperature',
   			  xaxis: {
-  			    title: 'Point of time',
-  			    showgrid: false,
-  			    zeroline: false
+  			    showgrid: true,
+  			    zeroline: true
   			  },
   			  yaxis: {
-  			    title: 'Temperature in degrees',
+  			    title: 'Temperature in degrees celsius',
   			    showline: false
   			  }
   			};
   	
         var link = document.getElementById('table' + id);
   	  	Plotly.newPlot(link, dataSet, layout);
+  	  	
+  	  	//Calculate average temperatures
+  	  	document.getElementById('avgWeek' + id).innerHTML = getAvgWeek(xData, yData);
+  	  	document.getElementById('avgMonth' + id).innerHTML = getAvgMonth(xData, yData);
+  	  	document.getElementById('avgYear' + id).innerHTML = getAvgYear(xData, yData);
     });
+}
+
+function getAvgWeek(xData, yData){
+	var cur = new Date();
+	var thisWeek = new Date();	//Week starts on sunday
+	var milliADay = 24*60*60*1000;
+	thisWeek.setTime(cur.getTime() - cur.getDay()*milliADay);
+	thisWeek.setHours(0);
+	thisWeek.setMinutes(0);
+	thisWeek.setSeconds(0);
+	thisWeek.setMilliseconds(0);
+
+	var nextWeek = new Date();
+	nextWeek.setTime(thisWeek.getTime() + milliADay*7);
+	
+	var count = 0;
+	var temp = 0;
+
+	for (var i = 0; i < xData.length; i++) {
+		//Data within this week	
+        if(xData[i] >= thisWeek && xData[i] < nextWeek ){
+        	count++;
+        	temp+=yData[i];
+        }
+    }
+	
+	if(count == 0){
+		return 'No data';
+	}
+	return round2Significant(temp/count, 2) + " &#8451";
+}
+
+function getAvgMonth(xData, yData){
+	var cur = new Date();
+	var thisMonth = new Date();
+	thisMonth.setDate(1);
+	thisMonth.setHours(0);
+	thisMonth.setMinutes(0);
+	thisMonth.setSeconds(0);
+	thisMonth.setMilliseconds(0);
+	
+	var nextMonth = new Date();
+	nextMonth.setTime(thisMonth.getTime());
+	nextMonth.setMonth((thisMonth.getMonth()+1)%12)
+	if(thisMonth.getMonth()+1 > 11){
+		nextMonth.setFullYear(thisMonth.getFullYear()+1)
+	}
+	
+	var count = 0;
+	var temp = 0;
+
+	for (var i = 0; i < xData.length; i++) {
+		//Data within this week	
+        if(xData[i] >= thisMonth && xData[i] < nextMonth ){
+        	count++;
+        	temp+=yData[i];
+        }
+    }
+	
+	if(count == 0){
+		return 'No data';
+	}
+	return round2Significant(temp/count, 2) + " &#8451";
+}
+
+function getAvgYear(xData, yData){
+	var cur = new Date();
+	var thisYear = new Date();
+	thisYear.setMonth(0);
+	thisYear.setDate(1);
+	thisYear.setHours(0);
+	thisYear.setMinutes(0);
+	thisYear.setSeconds(0);
+	thisYear.setMilliseconds(0);
+	
+	var nextYear = new Date();
+	nextYear.setTime(thisYear.getTime());
+	nextYear.setFullYear(thisYear.getFullYear()+1)
+
+	var count = 0;
+	var temp = 0;
+
+	for (var i = 0; i < xData.length; i++) {
+		//Data within this week	
+        if(xData[i] >= thisYear && xData[i] < nextYear ){
+        	count++;
+        	temp+=yData[i];
+        }
+    }
+	
+	if(count == 0){
+		return 'No data';
+	}
+	return round2Significant(temp/count, 2) + " &#8451";
+}
+
+function round2Significant(value, significant){
+	return Math.round(value * Math.pow(10, significant))/Math.pow(10, significant);
 }
