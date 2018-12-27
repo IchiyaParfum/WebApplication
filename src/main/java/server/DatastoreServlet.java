@@ -19,9 +19,11 @@ import com.google.gson.JsonArray;
 )
 public class DatastoreServlet extends HttpServlet {
 	private DatastoreManager ds;
+	private Json2CsvConverter json2csv;
 	
 	public DatastoreServlet() {
 		ds = DatastoreManager.getInstance();
+		json2csv = new Json2CsvConverter();
 	}
 	
   @Override
@@ -32,31 +34,34 @@ public class DatastoreServlet extends HttpServlet {
   }
   
   private String getResponseContent(HttpServletRequest request, HttpServletResponse response){
-	  	String requestedOption = request.getParameter("option");
 	  	String requestedId = request.getParameter("id");
 	  	String requestedRes = request.getParameter("res");
-	  	if(requestedRes != null) {
-	  		response.setHeader("Content-disposition","attachment; filename="+ requestedRes);
-	  	}
   		
-	  	switch(requestedOption) {
-	  	case "sensors":	  		
-	  		return doGetAsJson(request, response, requestedId);
-		case "values":
-	  		return doGetAsJson(request, response, requestedId);
-	  	}
-		return new String();		
+	  	return getContent(request, response, requestedId, requestedRes);	
 	}
   
-  	private String doGetAsJson(HttpServletRequest request, HttpServletResponse response, String id){
-		response.setContentType ("application/json");
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+ 
+  	private String getContent(HttpServletRequest request, HttpServletResponse response, String id, String res) {
+  		String format = new String();
+  		if(res != null) {
+	  		response.setHeader("Content-disposition","attachment; filename="+ res);
+	  		format = res.substring(res.lastIndexOf('.'));	//File ending
+	  	}
+  		if(format.equals(".csv")) {
+  			return json2csv.toCsv(queryJson(id));
+  		}else{
+  			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  			return gson.toJson(queryJson(id));
+  		} 		
+  	}
+  	
+  	private JsonArray queryJson(String id){
 		if(id == null) {
 			//Return sensors
-			return gson.toJson(ds.queryGSon());
+			return ds.queryGSon();
 		}
 		//Return sensor data
-		return gson.toJson(ds.queryGSon(id));
+		return ds.queryGSon(id);
   	}
 	
 	private void setResponseContent(HttpServletResponse response, String content, int status) throws IOException {
