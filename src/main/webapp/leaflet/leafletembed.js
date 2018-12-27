@@ -100,6 +100,7 @@ function plotGraph(id){
   	  	];
 
         var layout = {
+        		title: id,
   			  xaxis: {
   			    showgrid: true,
   			    zeroline: true
